@@ -4,5 +4,14 @@
  * @returns {string}
  */
 function ucFirst(str) {
-  // ваш код...
+
+  /*return str == false ? alert(`""`) : 
+    str[0].toUpperCase() + str.slice(1))
+  */
+
+  if(str == false) return alert(`""`);
+
+  return str[0].toUpperCase() + str.slice(1);  
 }
+
+ucFirst("vas");
