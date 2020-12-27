@@ -6,10 +6,11 @@
 
 function factorial(n) {
  
-  if(n === null || typeof(n) != "number") {
-    return alert('not a number');
-
-  } else if ( n === 0 || n === 1 ) {
+  if(!isFinite(n) || n === "" || n === " " || n === null) {
+    return n;
+  }
+  
+  if ( n === 0 || n === 1 ) {
     return 1;
   }
 
