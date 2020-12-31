@@ -1,9 +1,13 @@
 'use strict';
 
 let calculator = {
-  read(){
-    this.num1 = +prompt("enter num1");
-    this.num2 = +prompt("enter num2");
+  
+  num1: 0,
+  num2: 0,
+  
+  read(value1, value2){
+    this.num1 = value1;
+    this.num2 = value2;
   },
 
   sum(){
