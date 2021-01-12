@@ -4,35 +4,65 @@
  */
 function highlight(table) {
   
-  let row = table.rows;
-  let statusCellIndex = 0;
+  let rowsArr = [...table.rows];
+  let tHeadArr = [...table.querySelector('tHead').querySelectorAll('td')];
+  let statusIndex = null;
+  let genderIndex = null;
+  let ageIndex = null;
 
- 
-  for(let j = 0; row[j]; j++) {
-    for(let i = 0; row[j].cells[i]; i++) {
-      if(row[j].cells[i].textContent == 'Status') {
-        statusCellIndex = i;
-       }
-       if(row[j].cells[statusCellIndex]?.dataset.avaliable) {
-        row[j].cells[statusCellIndex].className = 'available';
-       }
-       if(!row[j].cells[statusCellIndex]?.dataset.avaliable) {
-        row[j].cells[statusCellIndex].className = 'unavailable';
-       }
-       if(row[j].cells[statusCellIndex].dataset.avaliable) {
-        row[j].cells[statusCellIndex].hidden = 'true';
-       }
-       if(row[j].cells[i].textContent == 'm') {
-        row[j].cells[i].classList.add('male');
-       }
-       if(row[j].cells[i].textContent == 'f') {
-        row[j].cells[i].classList.add('female');
-       }
-       if(typeof(row[j].cells[i].textContent) == 'number') {
-        (row[j].cells[i].textContent) < 18 ? row[j].cells[i].style.textDecoration = 'line-through' : null
-       }
-       
-    }
+  findIndex();
+  addStatusClass();
+  addGenderClass();
+  checkAge();
+
+  function findIndex() {
+    tHeadArr.forEach((item, i) => {
+      if(item.textContent == 'Status') {
+        statusIndex = i;
+      }
+      if(item.textContent == 'Gender') {
+        genderIndex = i;
+      }
+      if(item.textContent == 'Age') {
+        ageIndex = i;
+      }
+    })
   }
 
+  function addStatusClass() {
+    
+    rowsArr.forEach((item, i) => {
+      let dataAttr = item.cells[statusIndex]?.dataset.available; 
+
+      if(dataAttr === undefined && i != 0) {
+        item.hidden = true;
+      }
+      if(dataAttr == "false") {
+        item.classList.add('unavailable');
+      }
+      if(dataAttr == "true") {
+        item.classList.add('available');
+      }
+    })
+  }
+
+  function addGenderClass() {
+    
+    rowsArr.forEach((item) => {
+      let cell = item.cells[genderIndex];
+
+      (cell.textContent == 'f' ) ? item.classList.add('female') : item.classList.add('male');
+    })
+  }
+
+  function checkAge() {
+
+    rowsArr.forEach((item, i) => {
+      let cell = item.cells[ageIndex];
+
+      if( cell.textContent < 18 ) {
+        item.style.textDecoration = 'line-through';
+      } 
+    })
+  }
 }
