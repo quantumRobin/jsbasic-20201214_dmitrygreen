@@ -1,7 +1,7 @@
 function toggleText() {
+  let text = document.getElementById('text');
   document.querySelector('.toggle-text-button')
   .onclick = () => {
-    let text = document.getElementById('text');
     text.hidden = !text.hidden;
   };
 }

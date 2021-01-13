@@ -1,20 +1,23 @@
 function initCarousel() {
 	
-  let carouselHolder = document.querySelector(`[data-carousel-holder]`);
+  const carouselHolder = document.querySelector(`[data-carousel-holder]`);
 	let clickCounter = 0;
-	let rightArrow = document.querySelector(".carousel__arrow_right");
-	let leftArrow = document.querySelector(".carousel__arrow_left");
+	const rightArrow = document.querySelector(".carousel__arrow_right");
+	const leftArrow = document.querySelector(".carousel__arrow_left");
   leftArrow.style.display = 'none';
 
 	carouselHolder.onclick = (e) => {
 		if(e.target.closest('.carousel__arrow_right') && e.target.closest(".carousel__arrow_left")) return;
 
-		let offsetStep = document.querySelector(".carousel__inner").offsetWidth;
-		let carousel = document.querySelector(".carousel__inner");
+		const offsetStep = document.querySelector(".carousel__inner").offsetWidth;
+		const carousel = document.querySelector(".carousel__inner");
+
+		function hideElement(el) { el.style.display = 'none'};
+		function showElement(el) { el.style.display = ''};
 		
 		function showArrow() {
-			(clickCounter == 3) ? rightArrow.style.display = 'none' : rightArrow.style.display = '';
-			(clickCounter == 0) ? leftArrow.style.display = 'none' : leftArrow.style.display = '';
+			(clickCounter == 3) ? hideElement(rightArrow) : showElement(rightArrow);
+			(clickCounter == 0) ? hideElement(leftArrow) : showElement(leftArrow);
 		}
 
 		if(e.target.closest(".carousel__arrow_right")) {
