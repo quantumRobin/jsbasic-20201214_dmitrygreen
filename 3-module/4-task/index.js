@@ -4,6 +4,9 @@
  * @param {number} age - максимальный возраст
  * @returns {string}
  */
-function showSalary(users, age) {
-  // ваш код...
+function showSalary(users, ageLimit) {
+ 	return users
+	.filter( ({age}) => age <= ageLimit)
+	.map( ( {name, balance} ) => `${name}` + ', ' + `${balance}`)
+  .join(`\n`);
 }

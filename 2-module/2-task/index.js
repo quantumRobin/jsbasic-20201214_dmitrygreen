@@ -3,6 +3,12 @@
  * @param {Object} obj
  * @returns {Boolean}
  */
+
+'use strict';
+
 function isEmpty(obj) {
-  // ваш код...
+  for (const value in obj) {
+		return false;
+	}
+	return true;
 }
