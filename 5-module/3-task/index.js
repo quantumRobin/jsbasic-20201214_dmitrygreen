@@ -20,20 +20,22 @@ function initCarousel() {
 			(clickCounter == 0) ? hideElement(leftArrow) : showElement(leftArrow);
 		}
 
+		function translateCarousel() {
+			carousel.style.transform = `translateX(-${offsetStep*clickCounter}px)`;
+		}
+
 		if(e.target.closest(".carousel__arrow_right")) {
 			++clickCounter;
 			
 			showArrow();
-
-			carousel.style.transform = `translateX(-${offsetStep*clickCounter}px)`;
+			translateCarousel();
 		};
 
 		if(e.target.closest(".carousel__arrow_left")) {
 			--clickCounter;
 
 			showArrow();
-
-			carousel.style.transform = `translateX(-${offsetStep*clickCounter}px)`;
+			translateCarousel();
 		};
 
 	}
