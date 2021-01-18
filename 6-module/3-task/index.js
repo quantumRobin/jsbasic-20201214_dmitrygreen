@@ -1,21 +1,19 @@
 import createElement from '../../assets/lib/create-element.js';
 
-
 function slideTemplate({ name = 'Title', price = '0', image ='', id ='' } = {}) {
   return `
-  <div class="carousel__slide" data-id="${id}">
-  <img src="/assets/images/carousel/${image}" class="carousel__img" alt="slide">
-  <div class="carousel__caption">
-    <span class="carousel__price">€${price.toFixed(2)}</span>
-    <div class="carousel__title">${name}</div>
-    <button type="button" class="carousel__button">
-      <img src="/assets/images/icons/plus-icon.svg" alt="icon">
-    </button>
-  </div>
-</div>
+    <div class="carousel__slide" data-id="${id}">
+      <img src="/assets/images/carousel/${image}" class="carousel__img" alt="slide">
+      <div class="carousel__caption">
+        <span class="carousel__price">€${price.toFixed(2)}</span>
+        <div class="carousel__title">${name}</div>
+        <button type="button" class="carousel__button">
+          <img src="/assets/images/icons/plus-icon.svg" alt="icon">
+        </button>
+      </div>
+    </div>
   `;
 }
-
 
 function carouselTemplate(data) {
   return `
@@ -35,50 +33,41 @@ function carouselTemplate(data) {
   `;
 }
 
-
-
 export default class Carousel {
   constructor(slides) {
     this._slides = slides;
-    this._carouselInner = null;
+    this._carousel = null;
 
     this._render();
   }
 
   get elem() {
-    return this._carouselInner;
+    return this._carousel;
   }
-
 
   _render() {
     const _carouselSlides = this._slides.map(slideTemplate).join('');
-    
-    const _carouselSlidesContainer = carouselTemplate(_carouselSlides);
+    const _carouselInnerHTML = carouselTemplate(_carouselSlides);
 
-    this._carouselInner = createElement(_carouselSlidesContainer);
+    this._carousel = createElement(_carouselInnerHTML);
+
     this.addEventListeners();
   }
    
   addEventListeners() {
-    this._carouselInner.addEventListener('click', this._onPlusClick);
-    this._carouselInner.addEventListener('product-add', console.log);
+    this._carousel.addEventListener('click', this._onPlusClick);
+    this._carousel.addEventListener('product-add', console.log);
   }
 
   _onPlusClick = (e) => {    
     if(!e.target.closest('.carousel__button')) return;
-
-    const event = new CustomEvent('product-add', {detail: e.dataset.id, bubbles: true})
-    this._carouselInner.dispatchEvent(event);
+    
+    const event = new CustomEvent('product-add', {detail: e.target.dataset.id, bubbles: true})
+    this._carousel.dispatchEvent(event);
   }
-
-
-
 }
 
-
 setTimeout(() => {initCarousel()}, 0); 
-
-
 
 function initCarousel() {
 	const carouselHolder = document.querySelector('.carousel');
@@ -86,7 +75,7 @@ function initCarousel() {
 	const leftArrow = document.querySelector(".carousel__arrow_left");
 	const offsetStep = document.querySelector(".carousel__inner").offsetWidth;
 	const carousel = document.querySelector(".carousel__inner");
-  let slidesNumber = [...document.querySelectorAll('.carousel__slide')].length;
+  let slidesQuantity = [...document.querySelectorAll('.carousel__slide')].length;
   
 	let clickCounter = 0;
   hideElem(leftArrow);
@@ -95,7 +84,7 @@ function initCarousel() {
 	function showElem(elem) { elem.style.display = ''};
 		
 	function toggleArrow() {
-		(clickCounter == slidesNumber - 1) ? hideElem(rightArrow) : showElem(rightArrow);
+		(clickCounter == slidesQuantity - 1) ? hideElem(rightArrow) : showElem(rightArrow);
 		(clickCounter == 0) ? hideElem(leftArrow) : showElem(leftArrow);
 	}
 
@@ -121,5 +110,4 @@ function initCarousel() {
 		};
 
 	}
-
 } 

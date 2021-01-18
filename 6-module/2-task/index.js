@@ -57,7 +57,7 @@ export default class ProductCard {
 
   _onPlusClick = (e) => {    
     if(!e.target.closest('.card__button')) return;
-
+    
     const event = new CustomEvent('product-add', {detail: this._id, bubbles: true})
     this._container.dispatchEvent(event);
   }
