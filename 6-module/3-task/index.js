@@ -56,7 +56,7 @@ export default class Carousel {
    
   addEventListeners() {
     this._carousel.addEventListener('click', this._onPlusClick);
-    this._carousel.addEventListener('product-add', console.log);
+    this._carousel.addEventListener('product-add', this._passId);
   }
 
   _onPlusClick = (e) => {    
@@ -65,6 +65,11 @@ export default class Carousel {
     const event = new CustomEvent('product-add', {detail: slide.dataset.id, bubbles: true})
     this._carousel.dispatchEvent(event);
   }
+
+  _passId(){
+    
+  }
+
 }
 
 setTimeout(() => {initCarousel()}, 0); 
