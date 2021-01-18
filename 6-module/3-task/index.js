@@ -61,8 +61,8 @@ export default class Carousel {
 
   _onPlusClick = (e) => {    
     if(!e.target.closest('.carousel__button')) return;
-    
-    const event = new CustomEvent('product-add', {detail: e.target.dataset.id, bubbles: true})
+    const slide = e.target.closest(`[data-id]`);
+    const event = new CustomEvent('product-add', {detail: slide.dataset.id, bubbles: true})
     this._carousel.dispatchEvent(event);
   }
 }
