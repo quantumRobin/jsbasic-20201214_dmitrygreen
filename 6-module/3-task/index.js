@@ -36,83 +36,81 @@ function carouselTemplate(data) {
 export default class Carousel {
   constructor(slides) {
     this._slides = slides;
-    this._carousel = null;
+    this._container = null;
+    this.slidesQuantity = slides.length;
+    this.clickCounter = 0;
+    this.rightArrow = null;
+    this.leftArrow = null;
 
     this._render();
+    this.addEventListeners();
   }
 
   get elem() {
-    return this._carousel;
+    return this._container;
   }
 
   _render() {
     const _carouselSlides = this._slides.map(slideTemplate).join('');
-    const _carouselInnerHTML = carouselTemplate(_carouselSlides);
+    const _carousel = carouselTemplate(_carouselSlides);
 
-    this._carousel = createElement(_carouselInnerHTML);
-
-    this.addEventListeners();
+    this._container = createElement(_carousel);
+    this.rightArrow = this._container.querySelector(".carousel__arrow_right");
+    this.leftArrow = this._container.querySelector(".carousel__arrow_left");
+    
+    this.hideElem(this.leftArrow);
   }
    
   addEventListeners() {
-    this._carousel.addEventListener('click', this._onPlusClick);
-    this._carousel.addEventListener('product-add', this._passId);
+    this._container.addEventListener('click', this._onMenuButtonClick);
+    this._container.addEventListener('product-add', this._passId);
   }
 
-  _onPlusClick = (e) => {    
-    if(!e.target.closest('.carousel__button')) return;
-    const slide = e.target.closest(`[data-id]`);
-    const event = new CustomEvent('product-add', {detail: slide.dataset.id, bubbles: true})
-    this._carousel.dispatchEvent(event);
-  }
+  _onMenuButtonClick = (e) => {   
 
-  _passId(){
+    if(e.target.closest('.carousel__button')) {
+      const slide = e.target.closest(`[data-id]`);
+      const event = new CustomEvent('product-add', {detail: slide.dataset.id, bubbles: true});
+      this._container.dispatchEvent(event);
+    }
     
+    if(e.target.closest(".carousel__arrow_right")) {
+        ++this.clickCounter;
+        
+        this.toggleArrow();
+        this.translateCarousel();
+      };
+
+      if(e.target.closest(".carousel__arrow_left")) {
+        --this.clickCounter;
+
+        this.toggleArrow();
+        this.translateCarousel();
+      };
+
   }
 
+  sub(ref) {
+    return this.elem.querySelector(`.carousel__${ref}`);
+  }
+
+  _passId = (e) => {
+    console.log(e.detail);
+  }
+
+  hideElem(elem) { elem.style.display = 'none'}
+  showElem(elem) { elem.style.display = ''}
+  
+  toggleArrow() {
+    (this.clickCounter == this.slidesQuantity - 1) ? this.hideElem(this.rightArrow) : this.showElem(this.rightArrow);
+    (this.clickCounter == 0) ? this.hideElem(this.leftArrow) : this.showElem(this.leftArrow);
+    }
+  
+  translateCarousel() {
+    this.offsetStep = this._container.querySelector(".carousel__inner").offsetWidth;
+    this._container.querySelector(".carousel__inner").style.transform = `translateX(-${this.offsetStep*this.clickCounter}px)`;
+  }
 }
 
-setTimeout(() => {initCarousel()}, 0); 
 
-function initCarousel() {
-	const carouselHolder = document.querySelector('.carousel');
-	const rightArrow = document.querySelector(".carousel__arrow_right");
-	const leftArrow = document.querySelector(".carousel__arrow_left");
-	const offsetStep = document.querySelector(".carousel__inner").offsetWidth;
-	const carousel = document.querySelector(".carousel__inner");
-  let slidesQuantity = [...document.querySelectorAll('.carousel__slide')].length;
-  
-	let clickCounter = 0;
-  hideElem(leftArrow);
 
-	function hideElem(elem) { elem.style.display = 'none'};
-	function showElem(elem) { elem.style.display = ''};
-		
-	function toggleArrow() {
-		(clickCounter == slidesQuantity - 1) ? hideElem(rightArrow) : showElem(rightArrow);
-		(clickCounter == 0) ? hideElem(leftArrow) : showElem(leftArrow);
-	}
-
-	function translateCarousel() {
-			carousel.style.transform = `translateX(-${offsetStep*clickCounter}px)`;
-	}
-
-	carouselHolder.onclick = (e) => {
-		if(e.target.closest('.carousel__arrow_right') && e.target.closest(".carousel__arrow_left")) return;
-
-		if(e.target.closest(".carousel__arrow_right")) {
-			++clickCounter;
-			
-			toggleArrow();
-			translateCarousel();
-		};
-
-		if(e.target.closest(".carousel__arrow_left")) {
-			--clickCounter;
-
-			toggleArrow();
-			translateCarousel();
-		};
-
-	}
-} 
