@@ -90,10 +90,6 @@ export default class Carousel {
 
   }
 
-  sub(ref) {
-    return this.elem.querySelector(`.carousel__${ref}`);
-  }
-
   _passId = (e) => {
     console.log(e.detail);
   }
