@@ -37,13 +37,15 @@ export default class Carousel {
   constructor(slides) {
     this._slides = slides;
     this._container = null;
-    this.slidesQuantity = slides.length;
-    this.clickCounter = 0;
-    this.rightArrow = null;
-    this.leftArrow = null;
+    this._slidesQuantity = slides.length;
+    this._clickCounter = 0;
 
     this._render();
     this.addEventListeners();
+
+    this._rightArrow = this._container.querySelector(".carousel__arrow_right");
+    this._leftArrow = this._container.querySelector(".carousel__arrow_left");
+    this.hideElem(this._leftArrow);
   }
 
   get elem() {
@@ -55,56 +57,64 @@ export default class Carousel {
     const _carousel = carouselTemplate(_carouselSlides);
 
     this._container = createElement(_carousel);
-    this.rightArrow = this._container.querySelector(".carousel__arrow_right");
-    this.leftArrow = this._container.querySelector(".carousel__arrow_left");
     
-    this.hideElem(this.leftArrow);
-  }
-   
-  addEventListeners() {
-    this._container.addEventListener('click', this._onMenuButtonClick);
-    this._container.addEventListener('product-add', this._passId);
-  }
-
-  _onMenuButtonClick = (e) => {   
-
-    if(e.target.closest('.carousel__button')) {
-      const slide = e.target.closest(`[data-id]`);
-      const event = new CustomEvent('product-add', {detail: slide.dataset.id, bubbles: true});
-      this._container.dispatchEvent(event);
-    }
-    
-    if(e.target.closest(".carousel__arrow_right")) {
-        ++this.clickCounter;
-        
-        this.toggleArrow();
-        this.translateCarousel();
-      };
-
-      if(e.target.closest(".carousel__arrow_left")) {
-        --this.clickCounter;
-
-        this.toggleArrow();
-        this.translateCarousel();
-      };
-
-  }
-
-  _passId = (e) => {
-    console.log(e.detail);
   }
 
   hideElem(elem) { elem.style.display = 'none'}
   showElem(elem) { elem.style.display = ''}
   
-  toggleArrow() {
-    (this.clickCounter == this.slidesQuantity - 1) ? this.hideElem(this.rightArrow) : this.showElem(this.rightArrow);
-    (this.clickCounter == 0) ? this.hideElem(this.leftArrow) : this.showElem(this.leftArrow);
+  _toggleArrow() {
+    (this._clickCounter == this._slidesQuantity - 1) ? this.hideElem(this._rightArrow) : this.showElem(this._rightArrow);
+    (this._clickCounter == 0) ? this.hideElem(this._leftArrow) : this.showElem(this._leftArrow);
+  }
+   
+  addEventListeners() {
+    this._container.onclick = this._onMenuButtonClick;
+  }
+
+  _onMenuButtonClick = (e) => {   
+    
+    if(e.target.closest('.carousel__button')) {
+      this._onAddBtnClick(e);
     }
+    
+    if(e.target.closest(".carousel__arrow_right")) {
+      this._onArrowRightClick();
+      };
+    
+    if(e.target.closest(".carousel__arrow_left")) {
+      this._onArrowLeftClick()
+    };
+  }
+
+  _onAddBtnClick = (e) => {
+    const slide = e.target.closest(`[data-id]`);
+    const event = new CustomEvent('product-add', {detail: slide.dataset.id, bubbles: true});
+    this._container.dispatchEvent(event);
+    this._passId(event);
+  }
   
-  translateCarousel() {
+  _passId = (e) => {
+    console.log(e.detail);
+  }
+
+  _onArrowRightClick() {
+    ++this._clickCounter;
+        
+    this._toggleArrow();
+    this._translateCarousel();
+  }
+
+  _onArrowLeftClick() {
+    --this._clickCounter;
+
+    this._toggleArrow();
+    this._translateCarousel();
+  }
+  
+  _translateCarousel() {
     this.offsetStep = this._container.querySelector(".carousel__inner").offsetWidth;
-    this._container.querySelector(".carousel__inner").style.transform = `translateX(-${this.offsetStep*this.clickCounter}px)`;
+    this._container.querySelector(".carousel__inner").style.transform = `translateX(-${this.offsetStep*this._clickCounter}px)`;
   }
 }
 
