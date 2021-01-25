@@ -41,60 +41,79 @@ export default class StepSlider {
   constructor({ steps, value = 0 }) {
     this.steps = steps;
     this.value = value;
+    this.valuePercents = this.value*(100/(this.steps-1));
     this.container = null;
     
-    this.render();
-    this.addEventListeners();
-    this.initialThumbPosition();
+    this._render();
+
+    this.slider = this.container.closest('.slider');
+    this.sliderThumb = this.container.querySelector('.slider__thumb');
+    this.sliderProgress = this.container.querySelector('.slider__progress');
+    this.sliderStepsCollection = this.container.querySelector('.slider__steps').children;
+
+    this._addEventListeners();
+    this._initialThumbPosition();
+
+    //почему не работает байнд?
+    //this._onStepClick = this._onStepClick.bind(this);
+    
+    //ненужно байндить все методы. достаточно того что верхняя ф-я с байнд?
+    //this._changeValue = this._changeValue.bind(this);
+    //this._changeValuePercents = this._changeValuePercents.bind(this);
+    //this._toggleStepActiveClass = this._toggleStepActiveClass.bind(this);
   }
 
   get elem() {
     return this.container;
   }
 
-  render() {
+  _render() {
     const spans = spanTemplate(this.steps, this.value);
     const slider = sliderTemplate(this.value, spans);
 
     this.container = createElement(slider);
   }
 
-  initialThumbPosition() {
-    let leftPercents = this.value*(100/(this.steps-1));
-    this.container.querySelector('.slider__thumb').style.left = `${leftPercents}%`;
-    this.container.querySelector('.slider__progress').style.width = `${leftPercents}%`;
+  _initialThumbPosition() {
+    this.sliderThumb.style.left = `${this.valuePercents}%`;
+    this.sliderProgress.style.width = `${this.valuePercents}%`;
   }
  
-  addEventListeners() {
+  _addEventListeners() {
     this.container.addEventListener('click', this._onStepClick);
   }
 
-  _onStepClick(e) {
+  _onStepClick = (e) => {
     if(!e.target.closest('.slider')) return;
+    this._changeValue(e);
+    this._changeValuePercents();
+    this._toggleStepActiveClass(e);
     
-    const target = e.target;
-    const steps = document.querySelector('.slider__steps').children;
-    const slider = document.querySelector('.slider');
+    this.container.dispatchEvent(
+      new CustomEvent('slider-change', {detail: this.value, bubbles: true})
+    );
+  }
 
-    const sliderLeft = slider.getBoundingClientRect().left; 
+  _changeValue(e) {
+    const sliderLeft = this.container.getBoundingClientRect().left; 
     let left = e.clientX - sliderLeft; 
-    let leftRelative = left / slider.offsetWidth;
-    let segments = steps.length - 1;
+    let leftRelative = left / this.container.offsetWidth;
+    let segments = this.steps - 1;
     let approximateValue = leftRelative * segments;
     this.value = Math.round(approximateValue);
-
+    this.valuePercents = this.value / segments * 100;
     document.querySelector('.slider__value').innerHTML = this.value;
-
-    let valuePercents = this.value / segments * 100;
-    document.querySelector('.slider__thumb').style.left = `${valuePercents}%`;
-    document.querySelector('.slider__progress').style.width = `${valuePercents}%`;
-
-    for(let step of steps){
+  } 
+    
+  _changeValuePercents() {
+    this.sliderThumb.style.left = `${this.valuePercents}%`;
+    this.sliderProgress.style.width = `${this.valuePercents}%`;
+  }
+  
+  _toggleStepActiveClass(e) {
+    for(let step of this.sliderStepsCollection){
       step.classList.remove('slider__step-active');
     }
-    
-    target.classList.add('slider__step-active');
-
-    document.querySelector('.slider').dispatchEvent(new CustomEvent('slider-change', {detail: this.value, bubbles: true}));
+    e.target.classList.add('slider__step-active');
   }
 }
