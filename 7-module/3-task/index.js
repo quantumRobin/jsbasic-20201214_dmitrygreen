@@ -54,13 +54,13 @@ export default class StepSlider {
     this._addEventListeners();
     this._initialThumbPosition();
 
-    //почему не работает байнд?
-    //this._onStepClick = this._onStepClick.bind(this);
+    //почему не работает с байнд?
+    this._onStepClick = this._onStepClick.bind(this);
     
-    //ненужно байндить все методы. достаточно того что верхняя ф-я с байнд?
-    //this._changeValue = this._changeValue.bind(this);
-    //this._changeValuePercents = this._changeValuePercents.bind(this);
-    //this._toggleStepActiveClass = this._toggleStepActiveClass.bind(this);
+    //ненужно байндить все методы или достаточно того что верхняя ф-я с байнд?
+    this._changeValue = this._changeValue.bind(this);
+    this._changeValuePercents = this._changeValuePercents.bind(this);
+    this._toggleStepActiveClass = this._toggleStepActiveClass.bind(this);
   }
 
   get elem() {
@@ -83,7 +83,7 @@ export default class StepSlider {
     this.container.addEventListener('click', this._onStepClick);
   }
 
-  _onStepClick = (e) => {
+  _onStepClick(e) {
     if(!e.target.closest('.slider')) return;
     this._changeValue(e);
     this._changeValuePercents();
