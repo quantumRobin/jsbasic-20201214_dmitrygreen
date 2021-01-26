@@ -43,24 +43,18 @@ export default class StepSlider {
     this.value = value;
     this.valuePercents = this.value*(100/(this.steps-1));
     this.container = null;
-    
+   
     this._render();
 
     this.slider = this.container.closest('.slider');
     this.sliderThumb = this.container.querySelector('.slider__thumb');
     this.sliderProgress = this.container.querySelector('.slider__progress');
     this.sliderStepsCollection = this.container.querySelector('.slider__steps').children;
+    
+    this._onStepClick = this._onStepClick.bind(this);
 
     this._addEventListeners();
     this._initialThumbPosition();
-
-    //почему не работает с байнд?
-    this._onStepClick = this._onStepClick.bind(this);
-    
-    //ненужно байндить все методы или достаточно того что верхняя ф-я с байнд?
-    this._changeValue = this._changeValue.bind(this);
-    this._changeValuePercents = this._changeValuePercents.bind(this);
-    this._toggleStepActiveClass = this._toggleStepActiveClass.bind(this);
   }
 
   get elem() {
@@ -85,23 +79,27 @@ export default class StepSlider {
 
   _onStepClick(e) {
     if(!e.target.closest('.slider')) return;
-    this._changeValue(e);
+    this._calculateValueByPosition(e);
+    this._changeValue(this.approximateValue);
     this._changeValuePercents();
-    this._toggleStepActiveClass(e);
+    this._toggleStepActiveClass();
     
     this.container.dispatchEvent(
       new CustomEvent('slider-change', {detail: this.value, bubbles: true})
     );
   }
 
-  _changeValue(e) {
+  _calculateValueByPosition(e) {
     const sliderLeft = this.container.getBoundingClientRect().left; 
     let left = e.clientX - sliderLeft; 
     let leftRelative = left / this.container.offsetWidth;
-    let segments = this.steps - 1;
-    let approximateValue = leftRelative * segments;
-    this.value = Math.round(approximateValue);
-    this.valuePercents = this.value / segments * 100;
+    this.segments = this.steps - 1;
+    this.approximateValue = leftRelative * this.segments;
+  }
+
+  _changeValue() {
+    this.value = Math.round(this.approximateValue);
+    this.valuePercents = this.value*(100/(this.steps-1));
     document.querySelector('.slider__value').innerHTML = this.value;
   } 
     
@@ -110,10 +108,15 @@ export default class StepSlider {
     this.sliderProgress.style.width = `${this.valuePercents}%`;
   }
   
-  _toggleStepActiveClass(e) {
-    for(let step of this.sliderStepsCollection){
+  _toggleStepActiveClass() {
+    let sliderStepsCollection = this.sliderStepsCollection;
+    for(let step of sliderStepsCollection){
       step.classList.remove('slider__step-active');
     }
-    e.target.classList.add('slider__step-active');
+    for(let i = 0; i < sliderStepsCollection.length; i++) {
+      if(i == this.value) {
+        sliderStepsCollection[i].classList.add('slider__step-active');
+      }
+    }
   }
 }
